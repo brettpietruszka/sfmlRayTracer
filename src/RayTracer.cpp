@@ -1,7 +1,10 @@
 
 #include "RayTracer.hpp"
 #include "Camera.hpp"
+#include "Ray.hpp"
 #include "globals.hpp"
+#include "RayTracerMathLibrary.hpp"
+#include <limits>
 
 #include <SFML/Graphics.hpp>
 
@@ -87,38 +90,79 @@ bool RayTracer::RefreshImage(sf::Texture& OutTexture)
     // Create an Image and raytrace the scene
     RaytracedImage->create(ScreenWidth, ScreenHeight, sf::Color::White);
 
-    bool bIsGreen = true;
-    for (int x = 0; x < ScreenWidth; x++) 
+    for (int x = -ScreenWidth/2; x < ScreenWidth/2; x++) 
     {
-        for (int y = 0; y < ScreenHeight; y++)
+        for (int y = -ScreenHeight/2; y < ScreenHeight/2; y++)
         {
-            // set the color of the pixel
-            // loop through scene objects 
-            if (y % 40 == 0)
-            {
-                bIsGreen = !bIsGreen;
-                //RaytracedImage->setPixel(x, y, sf::Color::Green);
-
-            }
-
-            // Set pixel color
-            if (x > y)
-            {
-                RaytracedImage->setPixel(x, y, sf::Color::Green);
-            }
-            else 
-            {
-                RaytracedImage->setPixel(x, y, sf::Color::Red);
-            }
-
+            
+            // Calculate the color of the pixel at this location
+            sf::Vector3f Direction = CanvasToViewport(x,y);
+            Ray CurrentRay = Ray(RayTracerCamera->GetCameraLocation(), Direction);
+            sf::Color PixelColor = TraceRay(CurrentRay, 1, std::numeric_limits<float>::infinity());
+            
+            // Set the color of the pixel
+            RaytracedImage->setPixel(x + ScreenWidth/2, y + ScreenHeight/2, PixelColor);
         }
     }
 
 
 
-    // Todo: fix this line
-    ScreenTexture->loadFromImage(*RaytracedImage, sf::IntRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT));
+    // Set the OutTexture to be the resulting image
+    ScreenTexture->loadFromImage(*RaytracedImage, sf::IntRect(0, 0, ScreenWidth, ScreenHeight));
     OutTexture = sf::Texture(*ScreenTexture);
 
     return true;
+}
+
+
+sf::Vector3f RayTracer::CanvasToViewport(int x, int y)
+{
+    const Camera::ViewPort ViewPort = RayTracerCamera->GetCameraViewPort();
+
+    const float VpW = ViewPort.ViewportWidth;
+    const float VpH = ViewPort.ViewportHeight;
+    const float d = ViewPort.ViewportD;
+    return sf::Vector3f(x * VpW/ScreenWidth, y * VpH/ScreenHeight, d);
+}
+
+
+sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
+{
+    float ClosestT = std::numeric_limits<float>::infinity();
+    SceneObject* ClosestSceneObject = nullptr;
+
+    // TODO: Change to be SceneObjects
+    // Loop throught the scene spheres
+    for (const auto CurObject : SceneObjects)
+    {
+
+        // For now, cast to sphere
+        const Sphere* AsSphere = static_cast<Sphere*>(CurObject);
+
+        // Returns the result of the quadratic formula from the ray sphere intersection
+        sf::Vector2f TValues = RayTracerMathLibrary::IntersectRaySphere(CurrentRay, AsSphere);
+
+        const float t1 = TValues.x;
+        const float t2 = TValues.y;
+        // TODO
+        if (TMin <= t1 && t1 >= TMax && t1 < ClosestT )
+        {
+            ClosestT = t1;
+            ClosestSceneObject = CurObject;
+        }
+
+        if (TMin <= t2 && t2 >= TMax && t2 < ClosestT)
+        {
+            ClosestT = t2;
+            ClosestSceneObject = CurObject;
+        }
+    }
+
+    if (!ClosestSceneObject)
+    {
+        return sf::Color::White;
+    }
+
+    return ClosestSceneObject->ObjectColor;
+
 }

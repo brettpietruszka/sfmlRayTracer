@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "Ray.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <map>
 
@@ -27,8 +29,7 @@ public:
     };
 
 private:
-    sf::Vector3f* CameraLocation;
-    sf::Vector3f* CameraOrientation;
+    Ray* CameraRay;
 
     ViewPort* CameraViewPort;
 
@@ -46,7 +47,8 @@ public:
     //void HandleInput(const char InputButton);
 
     // Getters
-    sf::Vector3f getCameraLocation() const {return sf::Vector3f(*CameraLocation);}
-    sf::Vector3f getCameraOrientation() const {return sf::Vector3f(*CameraOrientation);}
-    ViewPort getCameraViewPort() const {return ViewPort(*CameraViewPort);}
+    sf::Vector3f GetCameraLocation() const {return CameraRay->GetOrigin();}
+    sf::Vector3f GetCameraOrientation() const {return CameraRay->GetDirection();}
+    Ray GetCameraRay() const {return *CameraRay;}
+    ViewPort GetCameraViewPort() const {return ViewPort(*CameraViewPort);}
 };

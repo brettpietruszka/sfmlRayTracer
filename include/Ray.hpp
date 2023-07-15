@@ -11,29 +11,21 @@ class Ray {
     */
 
     private:
-        sf::Vector2f origin;
-        sf::Vector2f direction;
+        sf::Vector3f* Origin;
+        sf::Vector3f* Direction;
 
     public:
-        Ray() = default;
-        Ray(sf::Vector2f origin, sf::Vector2f direction);
+        Ray();
+        Ray(sf::Vector3f InitOrigin, sf::Vector3f InitDirection);
 
-        sf::Vector2f intersects(Ray);
-        float distToPoint(sf::Vector2f);
+        void Translate(sf::Vector3f TransVec);
+        void Rotate(sf::Vector3f RotateVec);
 
-        void setOrigin(sf::Vector2f origin);
-        void setDirection(sf::Vector2f direction);
+        float Length();
+        void SetLength(float NewLength);
 
-        void translate(sf::Vector2f);
-        void rotate(float);
-
-        float length();
-        void setLength(float new_length);
-
-        void draw(sf::RenderTarget*,sf::Transform);
-
-        sf::Vector2f getOrigin();
-        sf::Vector2f getDirection();
+        sf::Vector3f GetOrigin() const;
+        sf::Vector3f GetDirection() const;
 };
 
 #endif
