@@ -4,9 +4,12 @@
 #include "Ray.hpp"
 #include "globals.hpp"
 #include "RayTracerMathLibrary.hpp"
-#include <limits>
+
 
 #include <SFML/Graphics.hpp>
+
+#include <limits>
+#include <iostream>
 
 RayTracer::RayTracer() : 
     RayTracerCamera{new Camera()}, 
@@ -82,7 +85,7 @@ bool RayTracer::RefreshImage(sf::Texture& OutTexture)
     // streaming real-time data, like video frames
     
     // Create an empty texture Todo: Screen Size
-    if (!ScreenTexture->create(640, 480))
+    if (!ScreenTexture->create(ScreenWidth, ScreenHeight))
     {
         return false; 
     }
@@ -93,15 +96,15 @@ bool RayTracer::RefreshImage(sf::Texture& OutTexture)
     for (int x = -ScreenWidth/2; x < ScreenWidth/2; x++) 
     {
         for (int y = -ScreenHeight/2; y < ScreenHeight/2; y++)
-        {
-            
+        {            
             // Calculate the color of the pixel at this location
             sf::Vector3f Direction = CanvasToViewport(x,y);
             Ray CurrentRay = Ray(RayTracerCamera->GetCameraLocation(), Direction);
+            CurrentRay.SetLength(1.0);
             sf::Color PixelColor = TraceRay(CurrentRay, 1, std::numeric_limits<float>::infinity());
             
             // Set the color of the pixel
-            RaytracedImage->setPixel(x + ScreenWidth/2, y + ScreenHeight/2, PixelColor);
+            RaytracedImage->setPixel(x + ScreenWidth/2, ScreenHeight - (y + ScreenHeight/2) - 1, PixelColor);
         }
     }
 
@@ -145,13 +148,13 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
         const float t1 = TValues.x;
         const float t2 = TValues.y;
         // TODO
-        if (TMin <= t1 && t1 >= TMax && t1 < ClosestT )
+        if (TMin <= t1 && t1 <= TMax && t1 < ClosestT )
         {
             ClosestT = t1;
             ClosestSceneObject = CurObject;
         }
 
-        if (TMin <= t2 && t2 >= TMax && t2 < ClosestT)
+        if (TMin <= t2 && t2 <= TMax && t2 < ClosestT)
         {
             ClosestT = t2;
             ClosestSceneObject = CurObject;

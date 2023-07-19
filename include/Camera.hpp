@@ -13,11 +13,12 @@ class Camera {
 
 public:
     struct ViewPort {
-        float ViewportWidth {0.0f};
-        float ViewportHeight {0.0f};
+        float ViewportWidth {1.0f};
+        float ViewportHeight {1.0f};
         float ViewportD {1.0f};
 
-        ViewPort() {}
+        ViewPort():
+            ViewportWidth{1.0f}, ViewportHeight{1.0f}, ViewportD{1.0f}  {}
 
         ViewPort(float Width, float Height, float D) :
             ViewportWidth{Width}, ViewportHeight{Height}, ViewportD{D} {}

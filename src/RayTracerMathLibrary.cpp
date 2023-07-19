@@ -17,8 +17,8 @@ sf::Vector2f RayTracerMathLibrary::IntersectRaySphere(const Ray& Ray, const RayT
 
     // Perform quadratic formula of ray sphere intersection 
     const float a = DotProduct(D, D);
-    const float b = DotProduct(CO, D);
-    const float c = DotProduct(CO, CO) - r;
+    const float b = 2.0f * DotProduct(CO, D);
+    const float c = DotProduct(CO, CO) - r * r;
 
     const float Discriminant = b * b  - 4 * a * c;
 
@@ -27,8 +27,8 @@ sf::Vector2f RayTracerMathLibrary::IntersectRaySphere(const Ray& Ray, const RayT
         return sf::Vector2f(std::numeric_limits<float>::infinity(), std::numeric_limits<float>::infinity());
     }
 
-    const float t1 = (-b + std::sqrt(Discriminant)) / (2 * a);
-    const float t2 = (-b - std::sqrt(Discriminant)) / (2 * a);
+    const float t1 = (-b + std::sqrt(Discriminant)) / (2.0f * a);
+    const float t2 = (-b - std::sqrt(Discriminant)) / (2.0f * a);
 
     return sf::Vector2f(t1,t2);
 }

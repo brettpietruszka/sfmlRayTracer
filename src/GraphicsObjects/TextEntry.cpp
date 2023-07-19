@@ -87,8 +87,8 @@ void TextEntry::activate()
 	// Button can be turned on
 	this->active = true;
     this->fieldBackground.setFillColor(sf::Color(200,200,200));
-    //userInput = "";
-    //this->userText.setString(userInput);
+    //UserInput = "";
+    //this->userText.setString(UserInput);
 }
 
 void TextEntry::deactivate()
