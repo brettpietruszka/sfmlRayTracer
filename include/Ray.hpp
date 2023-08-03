@@ -2,6 +2,7 @@
 #define RAY_HPP
 
 #include <SFML/Graphics.hpp>
+#include <cmath>
 
 class Ray {
     /*
@@ -17,6 +18,7 @@ class Ray {
     public:
         Ray();
         Ray(sf::Vector3f InitOrigin, sf::Vector3f InitDirection);
+        ~Ray();
 
         void Translate(sf::Vector3f TransVec);
         void Rotate(sf::Vector3f RotateVec);
@@ -26,6 +28,7 @@ class Ray {
 
         sf::Vector3f GetOrigin() const;
         sf::Vector3f GetDirection() const;
+
 };
 
 #endif

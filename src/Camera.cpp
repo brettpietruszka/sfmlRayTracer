@@ -21,3 +21,20 @@ Camera::~Camera()
     delete CameraViewPort;
 }
 
+
+void Camera::Translate(sf::Vector3f TranslateVector) 
+{
+    CameraRay->Translate(TranslateVector);
+
+    // Todo: Move the viewport
+}
+
+void Camera::Rotate(sf::Vector3f RotateVector) 
+{
+    // Rotate the camera ray and viewport
+    CameraRay->Rotate(RotateVector);
+    
+
+    // TODO Move the viewport
+}
+

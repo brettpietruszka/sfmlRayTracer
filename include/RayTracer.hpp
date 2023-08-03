@@ -73,6 +73,8 @@ public:
         TODO: add scene background. for now, it is white */
     sf::Color TraceRay(const Ray& CurrentRay, float TMin, float TMax);
 
-    // Todo: Input
+    /* Check for keyboard presses and relocate/rotate the current camera 
+        as needed (wasd moves camera, arrow keys rotate)*/
+    bool HandleInput();
 
 };

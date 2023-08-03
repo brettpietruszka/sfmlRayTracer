@@ -1,7 +1,9 @@
 
 #include <SFML/Graphics.hpp>
 #include "Ray.hpp"
+#include "RayTracerMathLibrary.hpp"
 #include <cmath>
+#include <iostream>
 
 Ray::Ray() :
     Origin{new sf::Vector3f()}, 
@@ -12,13 +14,29 @@ Ray::Ray(sf::Vector3f InitOrigin, sf::Vector3f InitDirection) :
     Direction{new sf::Vector3f(InitDirection)} {}
 
 
-void Ray::Translate(sf::Vector3f TransVec) {
+Ray::~Ray()
+{
+    delete Origin;
+    delete Direction;
+}
+
+void Ray::Translate(sf::Vector3f TransVec)
+{
     // Moves the origin by transVec amount
     *Origin = *Origin + TransVec;
 }
 
-void Ray::Rotate(sf::Vector3f RotateVec) {
-    // TODO: implement this 
+void Ray::Rotate(sf::Vector3f RotateVec) 
+{
+    if (!Direction)
+    {
+        std::cerr << "Why is there no direction on this ray while traying to rotate" << std::endl;
+        return;
+    }    
+    
+    RayTracerMathLibrary::RotatePointAboutOrigin(*Direction, RotateVec);
+
+    // TODO: must I change this?
 }
 
 float Ray::Length() {
@@ -28,10 +46,7 @@ float Ray::Length() {
 
 void Ray::SetLength(float NewLength) {
     // Change the Length of the direction vector to be new_length
-    if (std::abs(NewLength) < 0.0001) {
-        return;
-    } 
-    *Direction = (*Direction / Length()) * NewLength;
+    RayTracerMathLibrary::SetVectorLength(*Direction, NewLength);
 }
 
 sf::Vector3f Ray::GetOrigin() const {

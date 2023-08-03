@@ -44,8 +44,9 @@ public:
     Camera(const Camera& CameraToCopy);
     ~Camera();
 
-    // TODO Camera 
-    //void HandleInput(const char InputButton);
+    // sCamera Input functions
+    void Translate(sf::Vector3f TranslateVector);
+    void Rotate(sf::Vector3f RotateVector);
 
     // Getters
     sf::Vector3f GetCameraLocation() const {return CameraRay->GetOrigin();}

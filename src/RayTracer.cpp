@@ -125,7 +125,23 @@ sf::Vector3f RayTracer::CanvasToViewport(int x, int y)
     const float VpW = ViewPort.ViewportWidth;
     const float VpH = ViewPort.ViewportHeight;
     const float d = ViewPort.ViewportD;
-    return sf::Vector3f(x * VpW/ScreenWidth, y * VpH/ScreenHeight, d);
+
+    // TODO: calculate the 3d location of this point in the world
+    // if we assume roll is level with the x-z plane becauase it is, we can use cross product to find 
+    // first vector perpendicular to orientation and (0,1,0) (straight up)
+    // then we cross product to get a normal to both of those
+
+    // NEED TO TEST
+
+    const sf::Vector3f HeightPerp {0.0f, 1.0f, 0.0f};
+    sf::Vector3f WidthPerp = RayTracerMathLibrary::CrossProduct(RayTracerCamera->GetCameraOrientation(), HeightPerp);
+    RayTracerMathLibrary::SetVectorLength(WidthPerp, 1.0);
+
+    sf::Vector3f OutLocation = RayTracerCamera->GetCameraLocation() + RayTracerCamera->GetCameraOrientation() * d;
+    
+    OutLocation = OutLocation + WidthPerp * x * VpW/ScreenWidth + HeightPerp * y * VpH/ScreenHeight;
+
+    return OutLocation;
 }
 
 
@@ -168,4 +184,97 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
 
     return ClosestSceneObject->ObjectColor;
 
+}
+
+bool RayTracer::HandleInput()
+{
+    bool bCameraChanged = false; 
+    sf::Vector3f TranslateVec {};
+    sf::Vector3f RotateVec {};
+
+    //  Move Camera 
+    // z
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+    {
+        std::cerr << "w pressed" << std::endl;
+        TranslateVec.z += 10.0f; 
+        bCameraChanged = true;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+    {
+        std::cerr << "s pressed" << std::endl;
+        TranslateVec.z -= 10.0f;
+        bCameraChanged = true;
+
+    }
+
+    // x
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+    {
+        std::cerr << "d pressed" << std::endl;
+        TranslateVec.x += 10.0f;
+        bCameraChanged = true;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+    {
+        std::cerr << "a pressed" << std::endl;
+        TranslateVec.x -= 10.0f;
+        bCameraChanged = true;
+    }
+
+    // y
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
+    {
+        std::cerr << "e pressed" << std::endl;
+        TranslateVec.y += 10.0f;
+        bCameraChanged = true;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
+    {
+        std::cerr << "q pressed" << std::endl;
+        TranslateVec.y -= 10.0f;
+        bCameraChanged = true;
+    }
+
+
+
+    // Rotate Camera
+    // Pitch
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+    {
+        std::cerr << "up pressed" << std::endl;
+        RotateVec.x += 10.0f;
+        bCameraChanged = true;
+
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+    {
+        std::cerr << "down pressed" << std::endl;
+        RotateVec.x += 10.0f; 
+        bCameraChanged = true;
+    }
+
+    // Yaw
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    {
+        std::cerr << "left pressed" << std::endl;
+        RotateVec.y += 10.0f; 
+        bCameraChanged = true;
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+    {
+        std::cerr << "right pressed" << std::endl;
+        RotateVec.y += 10.0f; 
+        bCameraChanged = true;
+    }
+
+    // Apply Camera Transformations
+
+
+    return bCameraChanged;
 }
