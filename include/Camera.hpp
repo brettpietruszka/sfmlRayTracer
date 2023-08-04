@@ -30,9 +30,9 @@ public:
     };
 
 private:
-    Ray* CameraRay;
+    Ray* CameraRay = nullptr;
 
-    ViewPort* CameraViewPort;
+    ViewPort* CameraViewPort = nullptr;
 
     // Todo: keep track of wasd,e,q and mouse for manuevering scene
     //std::map<float, int> InputBindings;

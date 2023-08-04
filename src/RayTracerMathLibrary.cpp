@@ -33,7 +33,7 @@ sf::Vector2f RayTracerMathLibrary::IntersectRaySphere(const Ray& Ray, const RayT
     return sf::Vector2f(t1,t2);
 }
 
-sf::Vector3f RayTracerMathLibrary::RotatePointAboutOrigin(sf::Vector3f& InVec, const sf::Vector3f& RotateVec)
+void RayTracerMathLibrary::RotatePointAboutOrigin(sf::Vector3f& InVec, const sf::Vector3f& RotateVec)
 {
     // z y gives pitch pos pitch starts going upwards
     // x z gives yaw pos yaws cc
@@ -59,7 +59,7 @@ sf::Vector3f RayTracerMathLibrary::RotatePointAboutOrigin(sf::Vector3f& InVec, c
     InVec.z = NewDirectionZ;
 }
 
-void SetVectorLength(sf::Vector3f& Vec, float NewLength)
+void RayTracerMathLibrary::SetVectorLength(sf::Vector3f& Vec, float NewLength)
 {
     if (RayTracerMathLibrary::BasicallyZero(NewLength)) {
         // TODO: log
@@ -75,21 +75,3 @@ void SetVectorLength(sf::Vector3f& Vec, float NewLength)
 
     Vec = (Vec / VectorLength) * NewLength;
 }
-
-
-float GetVectorLength(const sf::Vector3f& Vec);
-{
-    return std::sqrt(std::pow(Vec.x,2) + std::pow(Vec.y,2) + std::pow(Vec.z,2));
-}
-
-float RayTracerMathLibrary::DotProduct(const sf::Vector3f& Vec1, const sf::Vector3f& Vec2) 
-{
-    return Vec1.x * Vec2.x + Vec1.y * Vec2.y + Vec1.z * Vec2.z;
-}
-
-sf::Vector3f CrossProduct(const sf::Vector3f A, const sf::Vector3f B)
-{
-    return sf::Vector3f(A.z * B.y - A.y * B.z,   A.x * B.z - A.z * B.x,   A.x * B.y - A.y * B.x);
-}
-
-

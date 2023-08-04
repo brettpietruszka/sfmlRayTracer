@@ -5,7 +5,6 @@
 #include "globals.hpp"
 #include "RayTracerMathLibrary.hpp"
 
-
 #include <SFML/Graphics.hpp>
 
 #include <limits>
@@ -132,14 +131,15 @@ sf::Vector3f RayTracer::CanvasToViewport(int x, int y)
     // then we cross product to get a normal to both of those
 
     // NEED TO TEST
-
+    sf::Vector3f Direction = RayTracerCamera->GetCameraOrientation();
     const sf::Vector3f HeightPerp {0.0f, 1.0f, 0.0f};
-    sf::Vector3f WidthPerp = RayTracerMathLibrary::CrossProduct(RayTracerCamera->GetCameraOrientation(), HeightPerp);
+    sf::Vector3f WidthPerp = RayTracerMathLibrary::CrossProduct(Direction, HeightPerp);
     RayTracerMathLibrary::SetVectorLength(WidthPerp, 1.0);
+    RayTracerMathLibrary::SetVectorLength(Direction, d);
 
-    sf::Vector3f OutLocation = RayTracerCamera->GetCameraLocation() + RayTracerCamera->GetCameraOrientation() * d;
+    sf::Vector3f OutLocation = RayTracerCamera->GetCameraLocation() + Direction;
     
-    OutLocation = OutLocation + WidthPerp * x * VpW/ScreenWidth + HeightPerp * y * VpH/ScreenHeight;
+    OutLocation = OutLocation + WidthPerp * (float)x * VpW/ScreenWidth + HeightPerp * (float)y * VpH/ScreenHeight;
 
     return OutLocation;
 }
@@ -273,7 +273,7 @@ bool RayTracer::HandleInput()
         bCameraChanged = true;
     }
 
-    // Apply Camera Transformations
+    // TODO: Apply Camera Transformations
 
 
     return bCameraChanged;

@@ -13,6 +13,9 @@ Ray::Ray(sf::Vector3f InitOrigin, sf::Vector3f InitDirection) :
     Origin{new sf::Vector3f(InitOrigin)}, 
     Direction{new sf::Vector3f(InitDirection)} {}
 
+Ray::Ray(const Ray& OtherRay) : 
+    Origin{new sf::Vector3f(*OtherRay.Origin)},
+    Direction{new sf::Vector3f(*OtherRay.Direction)} {}
 
 Ray::~Ray()
 {
@@ -35,16 +38,28 @@ void Ray::Rotate(sf::Vector3f RotateVec)
     }    
     
     RayTracerMathLibrary::RotatePointAboutOrigin(*Direction, RotateVec);
-
-    // TODO: must I change this?
 }
 
 float Ray::Length() {
+
+    if (!Direction)
+    {
+        std::cerr << "Why is there no direction on this ray while traying to get length" << std::endl;
+        return 0.0f;
+    }   
+
     // Calculate the length of the direction vector
-    return std::sqrt(std::pow(Direction->x,2) + std::pow(Direction->y,2) + std::pow(Direction->z,2));
+    return RayTracerMathLibrary::GetVectorLength(*Direction);
 }
 
 void Ray::SetLength(float NewLength) {
+
+    if (!Direction)
+    {
+        std::cerr << "Why is there no direction on this ray while traying to set length" << std::endl;
+        return;
+    }   
+
     // Change the Length of the direction vector to be new_length
     RayTracerMathLibrary::SetVectorLength(*Direction, NewLength);
 }

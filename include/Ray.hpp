@@ -12,12 +12,13 @@ class Ray {
     */
 
     private:
-        sf::Vector3f* Origin;
-        sf::Vector3f* Direction;
+        sf::Vector3f* Origin = nullptr;
+        sf::Vector3f* Direction = nullptr;
 
     public:
         Ray();
         Ray(sf::Vector3f InitOrigin, sf::Vector3f InitDirection);
+        Ray(const Ray& OtherRay);
         ~Ray();
 
         void Translate(sf::Vector3f TransVec);

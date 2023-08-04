@@ -14,32 +14,10 @@ int main() {
     sf::String UserInput;
     sf::Clock GameClock;
 
-    // Game Font Probably going to remove
-    // TODO: make sure this is relative
-    // if (!GameFont.loadFromFile("/Users/brettpietruszka/Documents/code/sfmlRayTracer/resource/Arialn.ttf"))
-    // {
-    //     std::cerr << "FAILED TO LOAD FONT" << std::endl;
-    // }
-    
-
-    // sf::Text FPSCounterText;
-    // FPSCounterText.setPosition(SCREEN_WIDTH * 0.95, SCREEN_HEIGHT * 0.05);
-    // FPSCounterText.setString(sf::String("0"));
-    // FPSCounterText.setFillColor(sf::Color::Black);
-    // FPSCounterText.setFont(GameFont);
-
-    // Test Ray! pitch, yaw , roll
-    Ray TestRay1 = Ray(sf::Vector3f(0.0f,0.0f,0.0f), sf::Vector3f(1.0f, 0.0f, 0.0f));
-    TestRay1.Rotate(sf::Vector3f(0.0f, 90.0f, 0.0f));
-    TestRay1.Rotate(sf::Vector3f(90.0f, 0.0f, 0.0f));
-    TestRay1.Rotate(sf::Vector3f(0.0f, 0.0f, -90.0f));
-    std::cout << TestRay1.GetDirection().x;
-    // should get (-1, 0, 0)
-
     // RayTracer data
     sf::Sprite DisplaySprite = sf::Sprite();
 
-    Camera::ViewPort MyViewPort{1.0f, 1.0f, 1.0f}; // Should have default values
+    Camera::ViewPort MyViewPort{1.6f, 1.0f, 1.0f}; // Should have default values
     Camera MyCamera {MyViewPort}; 
     RayTracer MyRaytracer {MyCamera, SCREEN_WIDTH, SCREEN_HEIGHT};
 
@@ -52,9 +30,6 @@ int main() {
 
     RayTracer::Sphere GreenSphere = RayTracer::Sphere(sf::Vector3f(-2.0f, 0.0f, 4.0f), 1, sf::Color(0,255,0));
     MyRaytracer.AddObject(0, GreenSphere);
-
-
-    
 
     // Start the "game" loop
     sf::Texture RenderedScene = sf::Texture();
@@ -69,28 +44,26 @@ int main() {
         window.draw(DisplaySprite);
     }
 
+    // Keep the window open
     while (window.isOpen()) 
     {
+
+        // Wipe the Screen
+        window.clear(sf::Color(0, 255, 0, 255));
+
         // increment fps counter. this breaks if fps is less than 1
         const int NewGameSeconds = (int)GameClock.getElapsedTime().asSeconds();
         if (NewGameSeconds > PrevSeconds)
         {
-            // update fps text
-            // char* NewStringText = new char;
-            // std::sprintf(NewStringText, "%d", FPSCounter);
-            // //FPSCounterText.setString(sf::String(NewStringText));
-            // std::cerr << NewStringText << std::endl;
-            // delete NewStringText;
-
-
             // refresh fps counter
+            std::cerr << "FPS = " << FPSCounter << std::endl;
             FPSCounter = 0;
             PrevSeconds = NewGameSeconds;
         }
         else 
         {
             FPSCounter++;
-            std::cerr << "Incrementing fps count" << std::endl;
+            
         }
 
         // Check For Generic Window Events 
@@ -116,16 +89,13 @@ int main() {
             // Raytrace the scene
             if (MyRaytracer.RefreshImage(RenderedScene)) 
             {
-                // Wipe the Screen
-                window.clear(sf::Color(0, 255, 0, 255));
-
                 // Draw the new scene
                 DisplaySprite.setTexture(RenderedScene);
-                window.draw(DisplaySprite);
+                
             }
         }
 
-        //window.draw(FPSCounterText);
+        window.draw(DisplaySprite);
         window.display();
         
     }

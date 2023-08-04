@@ -3,11 +3,11 @@
 
 
 Camera::Camera() :
-    CameraRay{new Ray(sf::Vector3f(), sf::Vector3f())},
-    CameraViewPort{new ViewPort{0.0f, 0.0f, 0.0f}} {}
+    CameraRay{new Ray(sf::Vector3f(), sf::Vector3f(0.0f, 0.0f, 1.0f))},
+    CameraViewPort{new ViewPort{0.0f, 0.0f, 1.0f}} {}
 
 Camera::Camera(const ViewPort& VP) :
-    CameraRay{new Ray(sf::Vector3f(), sf::Vector3f())},
+    CameraRay{new Ray(sf::Vector3f(), sf::Vector3f(0.0, 0.0f, VP.ViewportD))},
     CameraViewPort{new ViewPort{VP.ViewportWidth, VP.ViewportHeight, VP.ViewportD}} {}
 
 Camera::Camera(const Camera& CameraToCopy) :
@@ -33,7 +33,7 @@ void Camera::Rotate(sf::Vector3f RotateVector)
 {
     // Rotate the camera ray and viewport
     CameraRay->Rotate(RotateVector);
-    
+
 
     // TODO Move the viewport
 }

@@ -24,9 +24,9 @@ public:
     };
 
 private:
-    sf::Image* RaytracedImage;
-    sf::Texture* ScreenTexture;
-    Camera* RayTracerCamera;
+    sf::Image* RaytracedImage = nullptr;
+    sf::Texture* ScreenTexture = nullptr;
+    Camera* RayTracerCamera = nullptr;
 
     float ScreenWidth = 0.0f;
     float ScreenHeight = 0.0f;
