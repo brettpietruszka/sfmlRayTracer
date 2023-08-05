@@ -195,8 +195,8 @@ bool RayTracer::HandleInput()
     sf::Vector3f TranslateVec {};
     sf::Vector3f RotateVec {};
 
-    constexpr float DeltaTranslate = 0.05f;
-    constexpr float DeltaRotate = 1.0f;
+    constexpr float DeltaTranslate = 0.75f;
+    constexpr float DeltaRotate = 5.0f;
 
     //  Move Camera 
     // z
