@@ -77,4 +77,10 @@ public:
         as needed (wasd moves camera, arrow keys rotate)*/
     bool HandleInput();
 
+private:
+
+    /* Designed for multithreading of the screen portions to speed up rendering for intput
+    */
+    void RayTraceScreenPortion(int xmin, int xmax, int ymin, int ymax);
+
 };

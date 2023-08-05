@@ -1,7 +1,7 @@
 
 
 CXX = g++
-CXXFLAGS := -std=c++11 -g
+CXXFLAGS := -std=c++11 -g -pthread
 
 ifeq ($(OS),Windows_NT)
     lib_dir := ./SFML-2.5.1/build-win/lib

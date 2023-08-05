@@ -9,6 +9,7 @@
 
 #include <limits>
 #include <iostream>
+#include <thread>
 
 RayTracer::RayTracer() : 
     RayTracerCamera{new Camera()}, 
@@ -92,22 +93,17 @@ bool RayTracer::RefreshImage(sf::Texture& OutTexture)
     // Create an Image and raytrace the scene
     RaytracedImage->create(ScreenWidth, ScreenHeight, sf::Color::White);
 
-    for (int x = -ScreenWidth/2; x < ScreenWidth/2; x++) 
-    {
-        for (int y = -ScreenHeight/2; y < ScreenHeight/2; y++)
-        {            
-            // Calculate the color of the pixel at this location
-            sf::Vector3f Direction = CanvasToViewport(x,y);
-            Ray CurrentRay = Ray(RayTracerCamera->GetCameraLocation(), Direction);
-            CurrentRay.SetLength(1.0);
-            sf::Color PixelColor = TraceRay(CurrentRay, 1, std::numeric_limits<float>::infinity());
-            
-            // Set the color of the pixel
-            RaytracedImage->setPixel(x + ScreenWidth/2, ScreenHeight - (y + ScreenHeight/2) - 1, PixelColor);
-        }
-    }
 
+    // Thread here from -ScreenWidth/2 to 0, 0 to ScreenWidth/2
+    std::thread UpperLeft(&RayTracer::RayTraceScreenPortion, this, -ScreenWidth/2, 0, -ScreenHeight/2, 0);
+    std::thread LowerLeft(&RayTracer::RayTraceScreenPortion, this, -ScreenWidth/2, 0, 0, ScreenHeight/2 - 1);
+    std::thread UpperRight(&RayTracer::RayTraceScreenPortion, this, 0, ScreenWidth/2 - 1, -ScreenHeight/2, 0);
+    std::thread LowerRight(&RayTracer::RayTraceScreenPortion, this, 0, ScreenWidth/2 - 1, 0, ScreenHeight/2 - 1);
 
+    UpperLeft.join();
+    LowerLeft.join();
+    UpperRight.join();
+    LowerRight.join();
 
     // Set the OutTexture to be the resulting image
     ScreenTexture->loadFromImage(*RaytracedImage, sf::IntRect(0, 0, ScreenWidth, ScreenHeight));
@@ -277,4 +273,29 @@ bool RayTracer::HandleInput()
 
 
     return bCameraChanged;
+}
+
+
+void RayTracer::RayTraceScreenPortion(int xmin, int xmax, int ymin, int ymax)
+{
+
+    // TODO: mutex locks
+    for (int x = xmin; x <= xmax; x++) 
+    {
+        for (int y = ymin; y <= ymax; y++)
+        {            
+            // Calculate the color of the pixel at this location
+            // All of this is read only for shared data. no need for mutex locks
+            sf::Vector3f Direction = CanvasToViewport(x,y);
+            Ray CurrentRay = Ray(RayTracerCamera->GetCameraLocation(), Direction);
+            CurrentRay.SetLength(1.0);
+            sf::Color PixelColor = TraceRay(CurrentRay, 1, std::numeric_limits<float>::infinity());
+            
+            // Set the color of the pixel
+            // since we are only writing and never read from this
+            // and to different portions of the screen
+            // a mutex is technically not necessary
+            RaytracedImage->setPixel(x + ScreenWidth/2, ScreenHeight - (y + ScreenHeight/2) - 1, PixelColor);
+        }
+    }
 }
