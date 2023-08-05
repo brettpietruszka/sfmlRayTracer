@@ -184,23 +184,33 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
 
 bool RayTracer::HandleInput()
 {
+
+    if (!RayTracerCamera)
+    {
+        std::cerr << "Handle input, RayTracerCamera null" << std::endl;
+    }
+
+
     bool bCameraChanged = false; 
     sf::Vector3f TranslateVec {};
     sf::Vector3f RotateVec {};
+
+    constexpr float DeltaTranslate = 0.05f;
+    constexpr float DeltaRotate = 1.0f;
 
     //  Move Camera 
     // z
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
     {
         std::cerr << "w pressed" << std::endl;
-        TranslateVec.z += 10.0f; 
+        TranslateVec.z += DeltaTranslate; 
         bCameraChanged = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
     {
         std::cerr << "s pressed" << std::endl;
-        TranslateVec.z -= 10.0f;
+        TranslateVec.z -= DeltaTranslate;
         bCameraChanged = true;
 
     }
@@ -209,14 +219,14 @@ bool RayTracer::HandleInput()
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
     {
         std::cerr << "d pressed" << std::endl;
-        TranslateVec.x += 10.0f;
+        TranslateVec.x += DeltaTranslate;
         bCameraChanged = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
     {
         std::cerr << "a pressed" << std::endl;
-        TranslateVec.x -= 10.0f;
+        TranslateVec.x -= DeltaTranslate;
         bCameraChanged = true;
     }
 
@@ -224,14 +234,14 @@ bool RayTracer::HandleInput()
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
     {
         std::cerr << "e pressed" << std::endl;
-        TranslateVec.y += 10.0f;
+        TranslateVec.y += DeltaTranslate;
         bCameraChanged = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
     {
         std::cerr << "q pressed" << std::endl;
-        TranslateVec.y -= 10.0f;
+        TranslateVec.y -= DeltaTranslate;
         bCameraChanged = true;
     }
 
@@ -242,7 +252,7 @@ bool RayTracer::HandleInput()
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
         std::cerr << "up pressed" << std::endl;
-        RotateVec.x += 10.0f;
+        RotateVec.x -= DeltaRotate;
         bCameraChanged = true;
 
     }
@@ -250,7 +260,7 @@ bool RayTracer::HandleInput()
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
         std::cerr << "down pressed" << std::endl;
-        RotateVec.x += 10.0f; 
+        RotateVec.x += DeltaRotate; 
         bCameraChanged = true;
     }
 
@@ -258,19 +268,20 @@ bool RayTracer::HandleInput()
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
         std::cerr << "left pressed" << std::endl;
-        RotateVec.y += 10.0f; 
+        RotateVec.y += DeltaRotate; 
         bCameraChanged = true;
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
         std::cerr << "right pressed" << std::endl;
-        RotateVec.y += 10.0f; 
+        RotateVec.y -= DeltaRotate; 
         bCameraChanged = true;
     }
 
-    // TODO: Apply Camera Transformations
-
+    // Apply Camera Transformations
+    RayTracerCamera->Rotate(RotateVec);
+    RayTracerCamera->Translate(TranslateVec);
 
     return bCameraChanged;
 }
