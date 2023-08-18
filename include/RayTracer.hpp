@@ -63,7 +63,7 @@ private:
 
     /* Returns the intensity of the lighting at a specific 
         given point with a given normal*/
-    float ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& Normal);
+    float ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& Normal, const sf::Vector3f& V, const int& Shininess);
 
     RayTracer& operator=(const RayTracer&);
 };

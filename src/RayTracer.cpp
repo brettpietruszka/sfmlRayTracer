@@ -132,6 +132,8 @@ bool RayTracer::RefreshImage(sf::Texture& OutTexture)
 
 
     // Thread here from -ScreenWidth/2 to 0, 0 to ScreenWidth/2
+    // and the same for the height
+    // divide the screen into 4 or more seperate portions.
     std::thread UpperLeft(&RayTracer::RayTraceScreenPortion, this, -ScreenWidth/2, 0, -ScreenHeight/2, 0);
     std::thread LowerLeft(&RayTracer::RayTraceScreenPortion, this, -ScreenWidth/2, 0, 0, ScreenHeight/2 - 1);
     std::thread UpperRight(&RayTracer::RayTraceScreenPortion, this, 0, ScreenWidth/2 - 1, -ScreenHeight/2, 0);
@@ -224,53 +226,53 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
     SphereNormal /= RayTracerMathLibrary::GetVectorLength(SphereNormal);
     
     // TODO convert into sf::Vector3f color
-    const sf::Vector3f ResultColor = ClosestSceneObject->ObjectColor * ComputeLighting(SpherePoint, SphereNormal);
+    const sf::Vector3f ResultColor = ClosestSceneObject->ObjectColor * ComputeLighting(SpherePoint, SphereNormal, -CurrentRay.GetDirection(), ClosestSceneObject->Shininess);
     return sf::Color(ResultColor.x, ResultColor.y, ResultColor.z);
 
 }
 
-float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& Normal)
+float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& Normal, const sf::Vector3f& V, const int& Shininess)
 {
     float Intensity = 0.0f;
     sf::Vector3f L;
     for (const auto& Light : SceneLights)
     {
-        switch (Light->LightType)
+        if (Light->LightType == SceneLight::Type::Ambient)
         {
-            case SceneLight::Type::Ambient:
-                Intensity += Light->Intensity;
-                break;
-            
-            case SceneLight::Type::Directional:
-                {
-                    L = Light->LocationOrDirection;
 
-                    const float NDotL = RayTracerMathLibrary::DotProduct(Normal, L);
-                    if (NDotL > 0.0f)
-                    {
-                        Intensity += Light->Intensity * NDotL 
-                            / (RayTracerMathLibrary::GetVectorLength(Normal) * RayTracerMathLibrary::GetVectorLength(L));
-                    }
-                    break;
+        }
+        else 
+        {
+            if (Light->LightType == SceneLight::Type::Point)
+            {
+                L = Light->LocationOrDirection - Point;
+            }
+            else 
+            {
+                L = Light->LocationOrDirection;
+            }
+
+            const float NDotL = RayTracerMathLibrary::DotProduct(Normal, L);
+            if (NDotL > 0.0f)
+            {
+                Intensity += Light->Intensity * NDotL 
+                    / (RayTracerMathLibrary::GetVectorLength(Normal) * RayTracerMathLibrary::GetVectorLength(L));
+            }
+
+            if (Shininess != -1)
+            {
+                sf::Vector3f R = 2 * NDotL * Normal - L;
+                const float RDotV = RayTracerMathLibrary::DotProduct(R, V);
+                if (RDotV > 0.0f) 
+                {
+                    Intensity += Light->Intensity * std::pow(RDotV / (RayTracerMathLibrary::GetVectorLength(R) * RayTracerMathLibrary::GetVectorLength(V)), Shininess);
                 }
-
-            case SceneLight::Type::Point:
-                {
-                    L = Light->LocationOrDirection - Point;
-
-                    const float NDotL = RayTracerMathLibrary::DotProduct(Normal, L);
-                    if (NDotL > 0.0f)
-                    {
-                        Intensity += Light->Intensity * NDotL 
-                            / (RayTracerMathLibrary::GetVectorLength(Normal) * RayTracerMathLibrary::GetVectorLength(L));
-                    }
-                    break;
-                }       
+            }
         }
 
     }
 
-    return Intensity;
+    return Intensity > 1.0f ? 1.0f : Intensity;
 }
 
 bool RayTracer::HandleInput()

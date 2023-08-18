@@ -11,10 +11,12 @@ struct SceneObject
 {
     virtual SceneObject* Clone() const = 0;
 
-    sf::Vector3f ObjectColor;
+    sf::Vector3f ObjectColor {255.0f, 0.0f, 0.0f};
+    int Shininess = -1; // -1 means matte (not shiny)
 
-    SceneObject() : ObjectColor{sf::Vector3f(255.0f, 0.0f, 0.0f)} {}
-    SceneObject(sf::Vector3f InitColor) : ObjectColor{InitColor} {}
+    SceneObject() : ObjectColor{sf::Vector3f(255.0f, 0.0f, 0.0f)}, Shininess{-1} {}
+    SceneObject(sf::Vector3f InitColor, int InitShininess) : 
+        ObjectColor{InitColor}, Shininess{InitShininess} {}
     virtual ~SceneObject() {}
 };
 
@@ -23,10 +25,10 @@ struct Sphere : public SceneObject {
     float Radius {0.0f};
 
     Sphere() = default;
-    Sphere(sf::Vector3f InitCenter, float InitRadius, sf::Vector3f InitColor) :
-        SceneObject(InitColor), Center{InitCenter}, Radius{InitRadius} {}
+    Sphere(sf::Vector3f InitCenter, float InitRadius, sf::Vector3f InitColor, int InitShininess = -1) :
+        SceneObject(InitColor, InitShininess), Center{InitCenter}, Radius{InitRadius} {}
     Sphere(const Sphere& Other) : 
-            SceneObject(Other.ObjectColor), Center{Other.Center}, Radius{Other.Radius} {}
+            SceneObject(Other.ObjectColor, Other.Shininess), Center{Other.Center}, Radius{Other.Radius} {}
 
     ~Sphere() override {}
 
