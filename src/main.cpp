@@ -1,10 +1,6 @@
-#include <iostream>
 
 #include "main.hpp"
 
-#include <SFML/Graphics.hpp>
-
-#include <iostream>
 
 int main() {
 
@@ -69,7 +65,7 @@ int main() {
         if (NewGameSeconds > PrevSeconds)
         {
             // refresh fps counter
-            std::cerr << "FPS = " << FPSCounter << std::endl;
+            LOG_DEBUG("FPS = %d", FPSCounter);
             FPSCounter = 0;
             PrevSeconds = NewGameSeconds;
         }

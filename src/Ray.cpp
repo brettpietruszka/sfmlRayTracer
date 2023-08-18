@@ -1,7 +1,11 @@
 
-#include <SFML/Graphics.hpp>
+
 #include "Ray.hpp"
 #include "RayTracerMathLibrary.hpp"
+#include "DebugLog.hpp"
+
+#include <SFML/Graphics.hpp>
+
 #include <cmath>
 #include <iostream>
 
@@ -38,7 +42,7 @@ void Ray::Rotate(sf::Vector3f RotateVec)
 {
     if (!Direction)
     {
-        std::cerr << "Why is there no direction on this ray while traying to rotate" << std::endl;
+        LOG_DEBUG("Why is there no direction on this ray while traying to rotate");
         return;
     }    
     
@@ -50,7 +54,7 @@ float Ray::Length() const
 
     if (!Direction)
     {
-        std::cerr << "Why is there no direction on this ray while traying to get length" << std::endl;
+        LOG_DEBUG("Why is there no direction on this ray while traying to get length");
         return 0.0f;
     }   
 
@@ -62,7 +66,7 @@ void Ray::SetLength(float NewLength) {
 
     if (!Direction)
     {
-        std::cerr << "Why is there no direction on this ray while traying to set length" << std::endl;
+        LOG_DEBUG("Why is there no direction on this ray while traying to set length");
         return;
     }   
 
