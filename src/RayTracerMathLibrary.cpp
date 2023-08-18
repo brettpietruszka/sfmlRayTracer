@@ -9,7 +9,7 @@
 #include <cmath>
 
 
-sf::Vector2f RayTracerMathLibrary::IntersectRaySphere(const Ray& Ray, const RayTracer::Sphere* Sphere)
+sf::Vector2f RayTracerMathLibrary::IntersectRaySphere(const Ray& Ray, const Sphere* Sphere)
 {
     const float r = Sphere->Radius;
     const sf::Vector3f CO = Ray.GetOrigin() - Sphere->Center;

@@ -22,13 +22,13 @@ int main() {
     RayTracer MyRaytracer {MyCamera, SCREEN_WIDTH, SCREEN_HEIGHT};
 
     // Add our 3 shapes
-    RayTracer::Sphere RedSphere = RayTracer::Sphere(sf::Vector3f(0.0f, -1.0f, 3.0f), 1, sf::Color(255,0,0));
+    Sphere RedSphere = Sphere(sf::Vector3f(0.0f, -1.0f, 3.0f), 1, sf::Vector3f(255,0,0));
     MyRaytracer.AddObject(0, RedSphere);
 
-    RayTracer::Sphere BlueSphere = RayTracer::Sphere(sf::Vector3f(2.0f, 0.0f, 4.0f), 1, sf::Color(0,0,255));
+    Sphere BlueSphere = Sphere(sf::Vector3f(2.0f, 0.0f, 4.0f), 1, sf::Vector3f(0,0,255));
     MyRaytracer.AddObject(0, BlueSphere);
 
-    RayTracer::Sphere GreenSphere = RayTracer::Sphere(sf::Vector3f(-2.0f, 0.0f, 4.0f), 1, sf::Color(0,255,0));
+    Sphere GreenSphere = Sphere(sf::Vector3f(-2.0f, 0.0f, 4.0f), 1, sf::Vector3f(0,255,0));
     MyRaytracer.AddObject(0, GreenSphere);
 
     // Start the "game" loop

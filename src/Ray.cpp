@@ -23,6 +23,11 @@ Ray::~Ray()
     delete Direction;
 }
 
+sf::Vector3f Ray::GetPointDistanceFromOrigin(const float DistanceFromOrigin) const
+{
+    return *Origin + (*Direction) * (DistanceFromOrigin / Length());
+}
+
 void Ray::Translate(sf::Vector3f TransVec)
 {
     // Moves the origin by transVec amount
@@ -40,7 +45,8 @@ void Ray::Rotate(sf::Vector3f RotateVec)
     RayTracerMathLibrary::RotatePointAboutOrigin(*Direction, RotateVec);
 }
 
-float Ray::Length() {
+float Ray::Length() const
+{
 
     if (!Direction)
     {

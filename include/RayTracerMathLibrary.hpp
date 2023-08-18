@@ -3,6 +3,7 @@
 #pragma once
 
 #include "RayTracer.hpp"
+#include "SceneObjects.hpp"
 
 #include <SFML/Graphics.hpp>
 
@@ -21,7 +22,7 @@ public:
     // static sf::Vector3f IntersectRaySceneObject(const Ray* Ray, const T* SceneObject);
 
     /* Finds the intersection times for a point in 3d space of a ray and a sphere */
-    static sf::Vector2f IntersectRaySphere(const Ray& Ray, const RayTracer::Sphere* Sphere);
+    static sf::Vector2f IntersectRaySphere(const Ray& Ray, const Sphere* Sphere);
 
     static void RotatePointAboutOrigin(sf::Vector3f& InVec, const sf::Vector3f& RotateVec);
 

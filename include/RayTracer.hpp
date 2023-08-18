@@ -1,27 +1,15 @@
 #pragma once
 
 #include "Camera.hpp"
+#include "SceneObjects.hpp"
 
 #include <SFML/Graphics.hpp>
 
 
 class Ray;
 
-class RayTracer {
-
-public:
-
-    // TODO: move these SceneObjects into their own files???
-    struct SceneObject
-    {
-        virtual SceneObject* Clone() const = 0;
-
-        sf::Color ObjectColor;
-
-        SceneObject() : ObjectColor{sf::Color::Red} {}
-        SceneObject(sf::Color InitColor) : ObjectColor{InitColor} {}
-        virtual ~SceneObject() {}
-    };
+class RayTracer 
+{
 
 private:
     sf::Image* RaytracedImage = nullptr;
@@ -32,35 +20,21 @@ private:
     float ScreenHeight = 0.0f;
 
     std::vector<SceneObject*> SceneObjects;
+    std::vector<SceneLight*> SceneLights;
 
 public:
-
-    struct Sphere : public SceneObject {
-        sf::Vector3f Center {0.0f, 0.0f, 0.0f};
-        float Radius {0.0f};
-
-        Sphere() = default;
-        Sphere(sf::Vector3f InitCenter, float InitRadius, sf::Color InitColor) :
-            SceneObject(InitColor), Center{InitCenter}, Radius{InitRadius} {}
-        Sphere(const Sphere& Other) : 
-             SceneObject(Other.ObjectColor), Center{Other.Center}, Radius{Other.Radius} {}
-
-        ~Sphere() override {}
-
-        SceneObject* Clone() const override {return new Sphere(*this);}
-
-    };
-
-
     /* Default constructor initializes a camera at (0,0,0) with orientation of (0,0,1) */
     RayTracer();
     RayTracer(const Camera& RTCamera);
     RayTracer(const Camera& RTCamera, float InitScreenWidth, float InitScreenHeight);
     ~RayTracer();
 
-    /* Add and remove SceneObjects to the scene */
+    /* Add and remove SceneObjects/SceneLights to the scene */
     bool AddObject(int ObjectIndex, const SceneObject& ObjToAdd);
     bool RemoveObject(int ObjIdx);
+
+    bool AddLight(int ObjectIndex, const SceneLight& ObjToAdd);
+    bool RemoveLight(int ObjIdx);
  
     /* Ray traces the current scene into a texture the size of the screen */
     bool RefreshImage(sf::Texture& OutTexture);
@@ -68,19 +42,25 @@ public:
     /* Converts Screen coordinates to locations on the viewport */
     sf::Vector3f CanvasToViewport(int x, int y);
 
-    /* Traces a single Ray through the scene and determines the color, if nothing is found withing 
-        the time from Tmin to TmMax, it will return the color of the scene background 
-        TODO: add scene background. for now, it is white */
-    sf::Color TraceRay(const Ray& CurrentRay, float TMin, float TMax);
-
+    
     /* Check for keyboard presses and relocate/rotate the current camera 
         as needed (wasd moves camera, arrow keys rotate)*/
     bool HandleInput();
 
 private:
 
+    /* Traces a single Ray through the scene and determines the color, if nothing is found withing 
+        the time from Tmin to TmMax, it will return the color of the scene background 
+        TODO: add scene background. for now, it is white */
+    sf::Color TraceRay(const Ray& CurrentRay, float TMin, float TMax);
+
     /* Designed for multithreading of the screen portions to speed up rendering for intput
     */
     void RayTraceScreenPortion(int xmin, int xmax, int ymin, int ymax);
 
+    /* Returns the intensity of the lighting at a specific 
+        given point with a given normal*/
+    float ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& Normal);
+
+    RayTracer& operator=(const RayTracer&);
 };

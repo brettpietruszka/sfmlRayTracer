@@ -40,9 +40,14 @@ RayTracer::~RayTracer()
     delete ScreenTexture;
     delete RaytracedImage;
 
-    for (SceneObject* shape : SceneObjects) 
+    for (SceneObject* Shape : SceneObjects) 
     {
-        delete shape;
+        delete Shape;
+    }
+
+    for (SceneLight* Light : SceneLights) 
+    {
+        delete Light;
     }
 }
 
@@ -71,6 +76,38 @@ bool RayTracer::RemoveObject(int ObjIdx)
         {
             SceneObjects.erase(SceneObjects.begin() + ObjIdx);
             delete ObjToRemove;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool RayTracer::AddLight(int ObjectIndex, const SceneLight& LightToAdd)
+{
+    // Create a copy of the object passed in
+    SceneLight* NewLight = LightToAdd.Clone();
+
+    // Add the reference to the SceneObjects
+    if (NewLight)
+    {
+        SceneLights.emplace_back(NewLight);
+        return true;
+    }
+
+    return false;
+}
+
+
+bool RayTracer::RemoveLight(int LightIdx)
+{
+    if (LightIdx >= 0 && LightIdx < SceneLights.size())
+    {
+        // Valid Idx attemp to remove
+        if (SceneLight* LightToRemove = SceneLights.at(LightIdx))
+        {
+            SceneLights.erase(SceneLights.begin() + LightIdx);
+            delete LightToRemove;
             return true;
         }
     }
@@ -175,11 +212,47 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
 
     if (!ClosestSceneObject)
     {
+        // Return the background color (white)
         return sf::Color::White;
     }
 
-    return ClosestSceneObject->ObjectColor;
+    // TODO: make this work for other scene objects
+    // For now we will just assume it is a sphere
+    const Sphere* AsSphere = static_cast<Sphere*>(ClosestSceneObject);
+    const sf::Vector3f SpherePoint = CurrentRay.GetPointDistanceFromOrigin(ClosestT);
+    sf::Vector3f SphereNormal = SpherePoint - AsSphere->Center;
+    SphereNormal /= RayTracerMathLibrary::GetVectorLength(SphereNormal);
+    
+    // TODO convert into sf::Vector3f color
+    const sf::Vector3f ResultColor = ClosestSceneObject->ObjectColor * ComputeLighting(SpherePoint, SphereNormal);
+    return sf::Color(ResultColor.x, ResultColor.y, ResultColor.z);
 
+}
+
+float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& Normal)
+{
+    float Intensity = 0.0f;
+
+    for (const auto& Light : SceneLights)
+    {
+        switch (Light->LightType)
+        {
+            case SceneLight::Type::Ambient:
+
+                break;
+            
+            case SceneLight::Type::Directional:
+
+                break;
+
+            case SceneLight::Type::Point:
+
+                break;
+        }
+
+    }
+
+    return 0.0f;
 }
 
 bool RayTracer::HandleInput()

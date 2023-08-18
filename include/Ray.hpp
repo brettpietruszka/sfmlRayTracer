@@ -21,10 +21,12 @@ class Ray {
         Ray(const Ray& OtherRay);
         ~Ray();
 
+        sf::Vector3f GetPointDistanceFromOrigin(const float DistanceFromOrigin) const;
+
         void Translate(sf::Vector3f TransVec);
         void Rotate(sf::Vector3f RotateVec);
 
-        float Length();
+        float Length() const;
         void SetLength(float NewLength);
 
         sf::Vector3f GetOrigin() const;
