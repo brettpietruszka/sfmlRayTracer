@@ -232,27 +232,45 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
 float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& Normal)
 {
     float Intensity = 0.0f;
-
+    sf::Vector3f L;
     for (const auto& Light : SceneLights)
     {
         switch (Light->LightType)
         {
             case SceneLight::Type::Ambient:
-
+                Intensity += Light->Intensity;
                 break;
             
             case SceneLight::Type::Directional:
+                {
+                    L = Light->LocationOrDirection;
 
-                break;
+                    const float NDotL = RayTracerMathLibrary::DotProduct(Normal, L);
+                    if (NDotL > 0.0f)
+                    {
+                        Intensity += Light->Intensity * NDotL 
+                            / (RayTracerMathLibrary::GetVectorLength(Normal) * RayTracerMathLibrary::GetVectorLength(L));
+                    }
+                    break;
+                }
 
             case SceneLight::Type::Point:
+                {
+                    L = Light->LocationOrDirection - Point;
 
-                break;
+                    const float NDotL = RayTracerMathLibrary::DotProduct(Normal, L);
+                    if (NDotL > 0.0f)
+                    {
+                        Intensity += Light->Intensity * NDotL 
+                            / (RayTracerMathLibrary::GetVectorLength(Normal) * RayTracerMathLibrary::GetVectorLength(L));
+                    }
+                    break;
+                }       
         }
 
     }
 
-    return 0.0f;
+    return Intensity;
 }
 
 bool RayTracer::HandleInput()

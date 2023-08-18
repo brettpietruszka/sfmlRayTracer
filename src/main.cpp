@@ -31,6 +31,16 @@ int main() {
     Sphere GreenSphere = Sphere(sf::Vector3f(-2.0f, 0.0f, 4.0f), 1, sf::Vector3f(0,255,0));
     MyRaytracer.AddObject(0, GreenSphere);
 
+    // Add 3 Lights
+    SceneLight AmbientLight = SceneLight(SceneLight::Type::Ambient, 0.2);
+    MyRaytracer.AddLight(0, AmbientLight);
+
+    SceneLight PointLight = SceneLight(SceneLight::Type::Point, 0.6, sf::Vector3f(2.0f, 1.0f, 0.0f));
+    MyRaytracer.AddLight(0, PointLight);
+
+    SceneLight DirectionalLight = SceneLight(SceneLight::Type::Directional, 0.2, sf::Vector3f(1.0f, 4.0f, 4.0f));
+    MyRaytracer.AddLight(0, DirectionalLight);
+
     // Start the "game" loop
     sf::Texture RenderedScene = sf::Texture();
     float PrevTime = GameClock.getElapsedTime().asMilliseconds();

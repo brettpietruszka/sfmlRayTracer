@@ -33,7 +33,7 @@ struct Sphere : public SceneObject {
     SceneObject* Clone() const override {return new Sphere(*this);}
 
 private:
-    SceneObject& operator=(const SceneObject& OtherObject);
+    SceneObject& operator=(const SceneObject&);
 };
 
 
@@ -44,7 +44,7 @@ struct SceneLight
     enum class Type {Ambient, Directional, Point};
 
     SceneLight() = default;
-    SceneLight(Type InitLightType, float InitIntensity, sf::Vector3f InitLocationOrDirection) :
+    SceneLight(Type InitLightType, float InitIntensity, sf::Vector3f InitLocationOrDirection = sf::Vector3f(0.0f, 0.0f, 0.0f)) :
          LightType{InitLightType}, Intensity{InitIntensity}, LocationOrDirection{InitLocationOrDirection} {}
     SceneLight(const SceneLight& Other) :
         LightType{Other.LightType}, Intensity{Other.Intensity}, LocationOrDirection{Other.LocationOrDirection} {}
@@ -64,7 +64,7 @@ struct SceneLight
     SceneLight* Clone() const {return new SceneLight(*this);}
     
 private:
-    SceneLight& operator=(const SceneLight& OtherLight);
+    SceneLight& operator=(const SceneLight&);
 };
 
 

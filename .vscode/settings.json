@@ -68,7 +68,9 @@
         "typeinfo": "cpp",
         "unordered_map": "cpp",
         "utility": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "__functional_03": "cpp",
+        "memory_resource": "cpp"
     },
     "cmake.sourceDirectory": "/Users/brettpietruszka/Documents/code/sfmlRayTracer/SFML-2.5.1"
 }

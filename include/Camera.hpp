@@ -27,15 +27,15 @@ public:
             ViewportWidth{Other.ViewportWidth}, 
             ViewportHeight{Other.ViewportHeight}, 
             ViewportD{Other.ViewportD} {}
+
+    private:
+        ViewPort& operator=(const ViewPort&);
     };
 
 private:
     Ray* CameraRay = nullptr;
 
     ViewPort* CameraViewPort = nullptr;
-
-    // Todo: keep track of wasd,e,q and mouse for manuevering scene
-    //std::map<float, int> InputBindings;
 
 public:
     /* Constructors: */
@@ -53,4 +53,7 @@ public:
     sf::Vector3f GetCameraOrientation() const {return CameraRay->GetDirection();}
     Ray GetCameraRay() const {return *CameraRay;}
     ViewPort GetCameraViewPort() const {return ViewPort(*CameraViewPort);}
+
+private:
+    Camera& operator=(const Camera&);
 };

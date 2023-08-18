@@ -11,6 +11,9 @@ class Ray;
 class RayTracer 
 {
 
+    // Todo: keep track of wasd,e,q and mouse for manuevering scene
+    // std::map for InputBindings; ???
+
 private:
     sf::Image* RaytracedImage = nullptr;
     sf::Texture* ScreenTexture = nullptr;
