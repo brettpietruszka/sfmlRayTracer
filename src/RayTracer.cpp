@@ -3,6 +3,7 @@
 #include "Camera.hpp"
 #include "Ray.hpp"
 #include "globals.hpp"
+#include "SceneObjects.hpp"
 #include "RayTracerMathLibrary.hpp"
 #include "DebugLog.hpp"
 
@@ -183,35 +184,12 @@ sf::Vector3f RayTracer::CanvasToViewport(int x, int y)
 
 sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
 {
-    float ClosestT = std::numeric_limits<float>::infinity();
-    SceneObject* ClosestSceneObject = nullptr;
-
-    // TODO: Change to be SceneObjects
-    // Loop throught the scene spheres
-    for (const auto CurObject : SceneObjects)
-    {
-
-        // For now, cast to sphere
-        const Sphere* AsSphere = static_cast<Sphere*>(CurObject);
-
-        // Returns the result of the quadratic formula from the ray sphere intersection
-        sf::Vector2f TValues = RayTracerMathLibrary::IntersectRaySphere(CurrentRay, AsSphere);
-
-        const float t1 = TValues.x;
-        const float t2 = TValues.y;
-        // TODO
-        if (TMin <= t1 && t1 <= TMax && t1 < ClosestT )
-        {
-            ClosestT = t1;
-            ClosestSceneObject = CurObject;
-        }
-
-        if (TMin <= t2 && t2 <= TMax && t2 < ClosestT)
-        {
-            ClosestT = t2;
-            ClosestSceneObject = CurObject;
-        }
-    }
+    
+    // Get the closest intersection and use it to compute the color
+    Intersection Collision = ClosestIntersection(CurrentRay, TMin, TMax);
+    SceneObject* ClosestSceneObject = Collision.ClosestObject;
+    const float ClosestT = Collision.ClosestT;
+    
 
     if (!ClosestSceneObject)
     {
@@ -232,6 +210,45 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
 
 }
 
+ Intersection RayTracer::ClosestIntersection(const Ray& CurrentRay, float TMin, float TMax)
+ {
+
+    float ClosestT = std::numeric_limits<float>::infinity();
+    SceneObject* ClosestSceneObject = nullptr;
+
+    // TODO: Change to be SceneObjects
+    // Loop throught the scene spheres
+    for (const auto CurObject : SceneObjects)
+    {
+
+        // For now, cast to sphere
+        const Sphere* AsSphere = static_cast<Sphere*>(CurObject);
+
+        // Returns the result of the quadratic formula from the ray sphere intersection
+        sf::Vector2f TValues = RayTracerMathLibrary::IntersectRaySphere(CurrentRay, AsSphere);
+
+        const float t1 = TValues.x;
+        const float t2 = TValues.y;
+        
+        
+        if (TMin <= t1 && t1 <= TMax && t1 < ClosestT )
+        {
+            ClosestT = t1;
+            ClosestSceneObject = CurObject;
+        }
+
+        if (TMin <= t2 && t2 <= TMax && t2 < ClosestT)
+        {
+            ClosestT = t2;
+            ClosestSceneObject = CurObject;
+        }
+    }
+
+    return Intersection{ClosestSceneObject, ClosestT};
+ }
+
+
+
 float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& Normal, const sf::Vector3f& V, const int& Shininess)
 {
     float Intensity = 0.0f;
@@ -240,10 +257,12 @@ float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& 
     {
         if (Light->LightType == SceneLight::Type::Ambient)
         {
-
+            Intensity += Light->Intensity;
         }
         else 
         {
+            // Determine the Light Ray/Direction
+            float TMax = 0.0001f;
             if (Light->LightType == SceneLight::Type::Point)
             {
                 L = Light->LocationOrDirection - Point;
@@ -251,8 +270,18 @@ float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& 
             else 
             {
                 L = Light->LocationOrDirection;
+                TMax = std::numeric_limits<float>::infinity();
             }
 
+            // Check for Shadows
+            Intersection Collision = ClosestIntersection(Ray(Point, L), 0.001, TMax);
+
+            if (Collision.ClosestObject != nullptr)
+            {
+                continue;
+            }
+
+            // If no shadow, then add the correct amount of diffuse light
             const float NDotL = RayTracerMathLibrary::DotProduct(Normal, L);
             if (NDotL > 0.0f)
             {
@@ -260,6 +289,7 @@ float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& 
                     / (RayTracerMathLibrary::GetVectorLength(Normal) * RayTracerMathLibrary::GetVectorLength(L));
             }
 
+            // Specular lighting
             if (Shininess != -1)
             {
                 sf::Vector3f R = 2 * NDotL * Normal - L;

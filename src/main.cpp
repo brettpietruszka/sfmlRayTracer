@@ -27,7 +27,7 @@ int main() {
     Sphere GreenSphere = Sphere(sf::Vector3f(-2.0f, 0.0f, 4.0f), 1, sf::Vector3f(0,255,0), 10);
     MyRaytracer.AddObject(0, GreenSphere);
 
-    Sphere YellowSphere = Sphere(sf::Vector3f(0.0f, -5000.0f, 0.0f), 5000, sf::Vector3f(255,255,0), 1000);
+    Sphere YellowSphere = Sphere(sf::Vector3f(0.0f, -5001.0f, 0.0f), 5000, sf::Vector3f(255,255,0), 1000);
     MyRaytracer.AddObject(0, YellowSphere);
 
     // Add 3 Lights
@@ -72,7 +72,6 @@ int main() {
         else 
         {
             FPSCounter++;
-            
         }
 
         // Check For Generic Window Events 

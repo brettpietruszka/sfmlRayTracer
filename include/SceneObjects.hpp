@@ -6,7 +6,6 @@
 #include <SFML/Graphics.hpp>
 
 
-// TODO: move these SceneObjects into their own files???
 struct SceneObject
 {
     virtual SceneObject* Clone() const = 0;
@@ -34,8 +33,6 @@ struct Sphere : public SceneObject {
 
     SceneObject* Clone() const override {return new Sphere(*this);}
 
-private:
-    SceneObject& operator=(const SceneObject&);
 };
 
 
@@ -65,9 +62,16 @@ struct SceneLight
 
     SceneLight* Clone() const {return new SceneLight(*this);}
     
-private:
-    SceneLight& operator=(const SceneLight&);
 };
 
 
+// Intersection information to pass back 
+struct Intersection 
+{
+    Intersection(SceneObject* InitObject, float InitT) :
+        ClosestObject{InitObject}, ClosestT{InitT} {}
+
+    SceneObject* ClosestObject = nullptr;
+    float ClosestT = 0.0f;
+};
 
