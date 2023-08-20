@@ -40,4 +40,6 @@ public:
     inline static float DegreesToRadians(float Degs) {return Degs * M_PI / 180.0f;}
 
     inline static float RadiansToDegrees(float Rads) {return Rads * 180.0f / M_PI;}
+
+    inline static sf::Vector3f ReflectRay(const sf::Vector3f& R, const sf::Vector3f& N) {return 2 * DotProduct(N,R) * N - R;}
 };

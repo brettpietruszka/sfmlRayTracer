@@ -25,8 +25,6 @@ private:
     std::vector<SceneObject*> SceneObjects;
     std::vector<SceneLight*> SceneLights;
 
-    
-
 public:
     /* Default constructor initializes a camera at (0,0,0) with orientation of (0,0,1) */
     RayTracer();
@@ -57,20 +55,20 @@ private:
     /* Traces a single Ray through the scene and determines the color, if nothing is found withing 
         the time from Tmin to TmMax, it will return the color of the scene background 
         TODO: add scene background. for now, it is white */
-    sf::Color TraceRay(const Ray& CurrentRay, float TMin, float TMax);
+    sf::Color TraceRay(const Ray& CurrentRay, float TMin, float TMax, int RecursiveDepth);
 
     /* Performs a line trace through the scene with a specified range of t values
         and return the intersection of the lowest t-value. If no intersection is 
         found, the intersection struct returned with have a ClosestObject of nullptr */
     Intersection ClosestIntersection(const Ray& CurrentRay, float TMin, float TMax);
 
-    /* Designed for multithreading of the screen portions to speed up rendering for intput
-    */
+    /* Designed for multithreading of the screen portions to speed up rendering for intput */
     void RayTraceScreenPortion(int xmin, int xmax, int ymin, int ymax);
 
     /* Returns the intensity of the lighting at a specific 
-        given point with a given normal*/
+        given point with a given normal */
     float ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& Normal, const sf::Vector3f& V, const int& Shininess);
 
+    /* Prevent this from being used */
     RayTracer& operator=(const RayTracer&);
 };

@@ -8,26 +8,28 @@
 
 struct SceneObject
 {
-    virtual SceneObject* Clone() const = 0;
-
     sf::Vector3f ObjectColor {255.0f, 0.0f, 0.0f};
     int Shininess = -1; // -1 means matte (not shiny)
+    float Reflectiveness = 0.0f; // 0 is not reflective TODO: Clamp [0.0f,1.0f]
 
-    SceneObject() : ObjectColor{sf::Vector3f(255.0f, 0.0f, 0.0f)}, Shininess{-1} {}
-    SceneObject(sf::Vector3f InitColor, int InitShininess) : 
-        ObjectColor{InitColor}, Shininess{InitShininess} {}
+    SceneObject() : ObjectColor{sf::Vector3f(255.0f, 0.0f, 0.0f)}, Shininess{-1}, Reflectiveness{0.0f} {}
+    SceneObject(sf::Vector3f InitColor, int InitShininess, float InitReflectiveness) : 
+        ObjectColor{InitColor}, Shininess{InitShininess}, Reflectiveness{InitReflectiveness} {}
     virtual ~SceneObject() {}
+
+     virtual SceneObject* Clone() const = 0;
 };
 
-struct Sphere : public SceneObject {
+struct Sphere : public SceneObject 
+{
     sf::Vector3f Center {0.0f, 0.0f, 0.0f};
     float Radius {0.0f};
 
     Sphere() = default;
-    Sphere(sf::Vector3f InitCenter, float InitRadius, sf::Vector3f InitColor, int InitShininess = -1) :
-        SceneObject(InitColor, InitShininess), Center{InitCenter}, Radius{InitRadius} {}
+    Sphere(sf::Vector3f InitCenter, float InitRadius, sf::Vector3f InitColor, int InitShininess = -1, float InitReflectiveness = 0.0f) :
+        SceneObject(InitColor, InitShininess, InitReflectiveness), Center{InitCenter}, Radius{InitRadius} {}
     Sphere(const Sphere& Other) : 
-            SceneObject(Other.ObjectColor, Other.Shininess), Center{Other.Center}, Radius{Other.Radius} {}
+            SceneObject(Other.ObjectColor, Other.Shininess, Other.Reflectiveness), Center{Other.Center}, Radius{Other.Radius} {}
 
     ~Sphere() override {}
 

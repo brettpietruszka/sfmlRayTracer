@@ -182,7 +182,7 @@ sf::Vector3f RayTracer::CanvasToViewport(int x, int y)
 }
 
 
-sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
+sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax, int RecursiveDepth)
 {
     
     // Get the closest intersection and use it to compute the color
@@ -190,11 +190,10 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
     SceneObject* ClosestSceneObject = Collision.ClosestObject;
     const float ClosestT = Collision.ClosestT;
     
-
     if (!ClosestSceneObject)
     {
         // Return the background color (white)
-        return sf::Color::White;
+        return sf::Color::Black;
     }
 
     // TODO: make this work for other scene objects
@@ -206,8 +205,18 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
     
     // TODO convert into sf::Vector3f color
     const sf::Vector3f ResultColor = ClosestSceneObject->ObjectColor * ComputeLighting(SpherePoint, SphereNormal, -CurrentRay.GetDirection(), ClosestSceneObject->Shininess);
-    return sf::Color(ResultColor.x, ResultColor.y, ResultColor.z);
 
+    // Do reflections if the object is reflective and we haven't ran out of recursions
+    const float Refl = ClosestSceneObject->Reflectiveness;
+    if (Refl <= 0.0f || RecursiveDepth <= 0)
+    {
+        return sf::Color(ResultColor.x, ResultColor.y, ResultColor.z);
+    }
+
+    sf::Vector3f ReflectionRay = RayTracerMathLibrary::ReflectRay(-CurrentRay.GetDirection(), SphereNormal);
+    sf::Color ReflectedColor = TraceRay(Ray(SpherePoint, ReflectionRay), 0.001, std::numeric_limits<float>::infinity(), RecursiveDepth - 1);
+    sf::Vector3f FinalColor = ResultColor * (1 - Refl) + sf::Vector3f(ReflectedColor.r * Refl, ReflectedColor.g * Refl, ReflectedColor.b * Refl);
+    return sf::Color(FinalColor.x, FinalColor.y, FinalColor.z);
 }
 
  Intersection RayTracer::ClosestIntersection(const Ray& CurrentRay, float TMin, float TMax)
@@ -230,7 +239,7 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax)
         const float t1 = TValues.x;
         const float t2 = TValues.y;
         
-        
+
         if (TMin <= t1 && t1 <= TMax && t1 < ClosestT )
         {
             ClosestT = t1;
@@ -292,7 +301,7 @@ float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& 
             // Specular lighting
             if (Shininess != -1)
             {
-                sf::Vector3f R = 2 * NDotL * Normal - L;
+                sf::Vector3f R = RayTracerMathLibrary::ReflectRay(L, Normal);
                 const float RDotV = RayTracerMathLibrary::DotProduct(R, V);
                 if (RDotV > 0.0f) 
                 {
@@ -425,7 +434,7 @@ void RayTracer::RayTraceScreenPortion(int xmin, int xmax, int ymin, int ymax)
             sf::Vector3f Direction = CanvasToViewport(x,y);
             Ray CurrentRay = Ray(RayTracerCamera->GetCameraLocation(), Direction);
             CurrentRay.SetLength(1.0);
-            sf::Color PixelColor = TraceRay(CurrentRay, 1, std::numeric_limits<float>::infinity());
+            sf::Color PixelColor = TraceRay(CurrentRay, 1.0f, std::numeric_limits<float>::infinity(), 3);
             
             // Set the color of the pixel
             // since we are only writing and never read from this

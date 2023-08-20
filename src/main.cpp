@@ -18,16 +18,16 @@ int main() {
     RayTracer MyRaytracer {MyCamera, SCREEN_WIDTH, SCREEN_HEIGHT};
 
     // Add our shapes
-    Sphere RedSphere = Sphere(sf::Vector3f(0.0f, -1.0f, 3.0f), 1, sf::Vector3f(255,0,0), 500);
+    Sphere RedSphere = Sphere(sf::Vector3f(0.0f, -1.0f, 3.0f), 1, sf::Vector3f(255,0,0), 500, 0.2);
     MyRaytracer.AddObject(0, RedSphere);
 
-    Sphere BlueSphere = Sphere(sf::Vector3f(2.0f, 0.0f, 4.0f), 1, sf::Vector3f(0,0,255), 500);
+    Sphere BlueSphere = Sphere(sf::Vector3f(2.0f, 0.0f, 4.0f), 1, sf::Vector3f(0,0,255), 500, 0.3);
     MyRaytracer.AddObject(0, BlueSphere);
 
-    Sphere GreenSphere = Sphere(sf::Vector3f(-2.0f, 0.0f, 4.0f), 1, sf::Vector3f(0,255,0), 10);
+    Sphere GreenSphere = Sphere(sf::Vector3f(-2.0f, 0.0f, 4.0f), 1, sf::Vector3f(0,255,0), 10, 0.4);
     MyRaytracer.AddObject(0, GreenSphere);
 
-    Sphere YellowSphere = Sphere(sf::Vector3f(0.0f, -5001.0f, 0.0f), 5000, sf::Vector3f(255,255,0), 1000);
+    Sphere YellowSphere = Sphere(sf::Vector3f(0.0f, -5001.0f, 0.0f), 5000, sf::Vector3f(255,255,0), 1000, 0.5);
     MyRaytracer.AddObject(0, YellowSphere);
 
     // Add 3 Lights
