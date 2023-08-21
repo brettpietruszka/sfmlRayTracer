@@ -15,11 +15,11 @@
     std::cerr << std::endl;                 \
 }               
 
-#define LOG_CHARARRAY(Arr) std::cerr << Arr << std::endl;
+#define LOG_DEBUG_CHARARRAY(Arr) std::cerr << Arr << std::endl;
 
 #else
 
 #define LOG_DEBUG(...) (void*)0;
-#define LOG_CHARARRAY(Arr) (void*)0;
+#define LOG_DEBUG_CHARARRAY(Arr) (void*)0;
 
 #endif

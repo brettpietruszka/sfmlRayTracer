@@ -2,6 +2,7 @@
 #include "RayTracerMathLibrary.hpp"
 #include "Ray.hpp"
 #include "RayTracer.hpp"
+#include "DebugLog.hpp"
 
 #include <SFML/Graphics.hpp>
 
@@ -61,15 +62,16 @@ void RayTracerMathLibrary::RotatePointAboutOrigin(sf::Vector3f& InVec, const sf:
 
 void RayTracerMathLibrary::SetVectorLength(sf::Vector3f& Vec, float NewLength)
 {
-    if (RayTracerMathLibrary::BasicallyZero(NewLength)) {
-        // TODO: log
+    if (RayTracerMathLibrary::BasicallyZero(NewLength)) 
+    {
+        LOG_DEBUG("RayTracerMathLibrary SetVectorLength: Trying to set vector length to 0");
         return;
     } 
 
     const float VectorLength = GetVectorLength(Vec);
     if (RayTracerMathLibrary::BasicallyZero(VectorLength))
     {
-        // TODO: log
+        LOG_DEBUG("RayTracerMathLibrary SetVectorLength: Why does the vector already have a length of 0");
         return;
     }
 

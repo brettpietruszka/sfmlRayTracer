@@ -8,11 +8,12 @@
 
 class Camera {
 
-    /* This is kind of a data class right now. Eventually will provide 
-        functionality for moving the camera and utilizing the ray */
+    /* Camera to represent the POV of our observer of our scene */
 
 public:
     struct ViewPort {
+        /* Represents the pane in the scene through which we see the scene */
+
         float ViewportWidth {1.0f};
         float ViewportHeight {1.0f};
         float ViewportD {1.0f};
@@ -44,7 +45,7 @@ public:
     Camera(const Camera& CameraToCopy);
     ~Camera();
 
-    // sCamera Input functions
+    // Camera Input functions
     void Translate(sf::Vector3f TranslateVector);
     void Rotate(sf::Vector3f RotateVector);
 

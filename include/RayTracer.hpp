@@ -32,7 +32,7 @@ public:
     RayTracer(const Camera& RTCamera, float InitScreenWidth, float InitScreenHeight);
     ~RayTracer();
 
-    /* Add and remove SceneObjects/SceneLights to the scene */
+    /* Add and remove SceneObjects/SceneLights to and from the scene */
     bool AddObject(int ObjectIndex, const SceneObject& ObjToAdd);
     bool RemoveObject(int ObjIdx);
 
@@ -41,16 +41,15 @@ public:
  
     /* Ray traces the current scene into a texture the size of the screen */
     bool RefreshImage(sf::Texture& OutTexture);
-
-    /* Converts Screen coordinates to locations on the viewport */
-    sf::Vector3f CanvasToViewport(int x, int y);
-
     
     /* Check for keyboard presses and relocate/rotate the current camera 
         as needed (wasd moves camera, arrow keys rotate)*/
     bool HandleInput();
 
 private:
+
+    /* Converts Screen coordinates to locations on the viewport */
+    sf::Vector3f CanvasToViewport(int x, int y);
 
     /* Traces a single Ray through the scene and determines the color, if nothing is found withing 
         the time from Tmin to TmMax, it will return the color of the scene background 

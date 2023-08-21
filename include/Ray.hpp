@@ -5,11 +5,9 @@
 #include <cmath>
 
 class Ray {
-    /*
-        This class represents a linear parametric equation
-        can calculate intersections it is currently unused
-        TODO: modify to suit this application
-    */
+    /* This class represents a linear parametric equation
+        with an origin and a direction. Is not guaranteed to have 
+        a direction that is a unit vector */
 
 private:
     sf::Vector3f* Origin = nullptr;

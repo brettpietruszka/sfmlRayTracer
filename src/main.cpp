@@ -96,7 +96,7 @@ int main() {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
             char MouseOutput[30] = "mouse output";
             std::sprintf(MouseOutput, "%d, %d", sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
-            LOG_CHARARRAY(MouseOutput);
+            LOG_DEBUG_CHARARRAY(MouseOutput);
         } 
        
         // Handle Input

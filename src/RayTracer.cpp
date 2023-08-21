@@ -71,9 +71,10 @@ bool RayTracer::AddObject(int ObjectIndex, const SceneObject& ObjToAdd)
 
 bool RayTracer::RemoveObject(int ObjIdx)
 {   
+    // Find and remove the object (not sorted)
     if (ObjIdx >= 0 && ObjIdx < SceneObjects.size())
     {
-        // Valid Idx attemp to remove
+        // Valid Idx attempt to remove
         if (SceneObject* ObjToRemove = SceneObjects.at(ObjIdx))
         {
             SceneObjects.erase(SceneObjects.begin() + ObjIdx);
@@ -103,9 +104,10 @@ bool RayTracer::AddLight(int ObjectIndex, const SceneLight& LightToAdd)
 
 bool RayTracer::RemoveLight(int LightIdx)
 {
+    // Find and remove the light (not sorted)
     if (LightIdx >= 0 && LightIdx < SceneLights.size())
     {
-        // Valid Idx attemp to remove
+        // Valid Idx attempt to remove
         if (SceneLight* LightToRemove = SceneLights.at(LightIdx))
         {
             SceneLights.erase(SceneLights.begin() + LightIdx);
@@ -132,10 +134,7 @@ bool RayTracer::RefreshImage(sf::Texture& OutTexture)
     // Create an Image and raytrace the scene
     RaytracedImage->create(ScreenWidth, ScreenHeight, sf::Color::White);
 
-
-    // Thread here from -ScreenWidth/2 to 0, 0 to ScreenWidth/2
-    // and the same for the height
-    // divide the screen into 4 or more seperate portions.
+    // Divide the screen into 4 or more seperate portions.
     std::thread UpperLeft(&RayTracer::RayTraceScreenPortion, this, -ScreenWidth/2, 0, -ScreenHeight/2, 0);
     std::thread LowerLeft(&RayTracer::RayTraceScreenPortion, this, -ScreenWidth/2, 0, 0, ScreenHeight/2 - 1);
     std::thread UpperRight(&RayTracer::RayTraceScreenPortion, this, 0, ScreenWidth/2 - 1, -ScreenHeight/2, 0);
@@ -162,12 +161,12 @@ sf::Vector3f RayTracer::CanvasToViewport(int x, int y)
     const float VpH = ViewPort.ViewportHeight;
     const float d = ViewPort.ViewportD;
 
-    // TODO: calculate the 3d location of this point in the world
-    // if we assume roll is level with the x-z plane becauase it is, we can use cross product to find 
-    // first vector perpendicular to orientation and (0,1,0) (straight up)
-    // then we cross product to get a normal to both of those
+    /* TODO: figure out if the distortion cause by rotation is accurate or not
+        Calculate the 3d location of this point in the world
+        if we assume roll is level with the x-z plane becauase it is, we can use cross product to find 
+        first vector perpendicular to orientation and (0,1,0) (straight up)
+        then we cross product to get a normal to both of those. */
 
-    // NEED TO TEST
     sf::Vector3f Direction = RayTracerCamera->GetCameraOrientation();
     const sf::Vector3f HeightPerp {0.0f, 1.0f, 0.0f};
     sf::Vector3f WidthPerp = RayTracerMathLibrary::CrossProduct(Direction, HeightPerp);
@@ -203,11 +202,8 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax, int
     sf::Vector3f SphereNormal = SpherePoint - AsSphere->Center;
     SphereNormal /= RayTracerMathLibrary::GetVectorLength(SphereNormal);
     
-    // TODO convert into sf::Vector3f color
     const sf::Vector3f ResultColor = ClosestSceneObject->ObjectColor * ComputeLighting(SpherePoint, SphereNormal, -CurrentRay.GetDirection(), ClosestSceneObject->Shininess);
 
-
-    //return sf::Color(ResultColor.x, ResultColor.y, ResultColor.z);
     // Do reflections if the object is reflective and we haven't ran out of recursions
     const float Refl = ClosestSceneObject->Reflectiveness;
     if (Refl <= 0.0f || RecursiveDepth <= 0)
@@ -242,7 +238,7 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax, int
         const float t1 = TValues.x;
         const float t2 = TValues.y;
         
-
+        // Determine if this object is the closest and set values
         if (TMin <= t1 && t1 <= TMax && t1 < ClosestT )
         {
             ClosestT = t1;
@@ -263,6 +259,8 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax, int
 
 float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& Normal, const sf::Vector3f& V, const int& Shininess)
 {
+    /* Determing the intensity of the light at a particular location in the scene 
+        by looping through the scene lights and adding their contributions */
     float Intensity = 0.0f;
     sf::Vector3f L;
     for (const auto& Light : SceneLights)
@@ -285,7 +283,7 @@ float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& 
                 TMax = std::numeric_limits<float>::infinity();
             }
 
-            // Check for Shadows
+            // Check for Shadows, if shadow no diffuse or specular light
             Intersection Collision = ClosestIntersection(Ray(Point, L), 0.001, TMax);
 
             if (Collision.ClosestObject != nullptr)
@@ -293,7 +291,7 @@ float RayTracer::ComputeLighting(const sf::Vector3f& Point, const sf::Vector3f& 
                 continue;
             }
 
-            // If no shadow, then add the correct amount of diffuse light
+            // Diffuse Lighting
             const float NDotL = RayTracerMathLibrary::DotProduct(Normal, L);
             if (NDotL > 0.0f)
             {
@@ -427,19 +425,12 @@ bool RayTracer::HandleInput()
 void RayTracer::RayTraceScreenPortion(int xmin, int xmax, int ymin, int ymax)
 {
 
-    // TODO: mutex locks
+    /* Loop a particular portion of the scene and set the color of the image 
+        based of the result of the ray trace*/
     for (int x = xmin; x <= xmax; x++) 
     {
         for (int y = ymin; y <= ymax; y++)
         {        
-            const int sx = x + ScreenWidth/2;
-            const int sy = ScreenHeight - (y + ScreenHeight/2);
-            if ((sx == 40 && sy == 734) || (sx == 464 && sy == 718)) 
-            {
-                // 40 is white triangle
-                LOG_DEBUG("");
-            }
-
             // Calculate the color of the pixel at this location
             // All of this is read only for shared data. no need for mutex locks
             sf::Vector3f Direction = CanvasToViewport(x,y);
