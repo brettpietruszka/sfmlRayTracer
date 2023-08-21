@@ -206,6 +206,8 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax, int
     // TODO convert into sf::Vector3f color
     const sf::Vector3f ResultColor = ClosestSceneObject->ObjectColor * ComputeLighting(SpherePoint, SphereNormal, -CurrentRay.GetDirection(), ClosestSceneObject->Shininess);
 
+
+    //return sf::Color(ResultColor.x, ResultColor.y, ResultColor.z);
     // Do reflections if the object is reflective and we haven't ran out of recursions
     const float Refl = ClosestSceneObject->Reflectiveness;
     if (Refl <= 0.0f || RecursiveDepth <= 0)
@@ -214,8 +216,9 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax, int
     }
 
     sf::Vector3f ReflectionRay = RayTracerMathLibrary::ReflectRay(-CurrentRay.GetDirection(), SphereNormal);
-    sf::Color ReflectedColor = TraceRay(Ray(SpherePoint, ReflectionRay), 0.001, std::numeric_limits<float>::infinity(), RecursiveDepth - 1);
+    sf::Color ReflectedColor = TraceRay(Ray(SpherePoint, ReflectionRay), 0.01, std::numeric_limits<float>::infinity(), RecursiveDepth - 1);
     sf::Vector3f FinalColor = ResultColor * (1 - Refl) + sf::Vector3f(ReflectedColor.r * Refl, ReflectedColor.g * Refl, ReflectedColor.b * Refl);
+
     return sf::Color(FinalColor.x, FinalColor.y, FinalColor.z);
 }
 
@@ -227,7 +230,7 @@ sf::Color RayTracer::TraceRay(const Ray& CurrentRay, float TMin, float TMax, int
 
     // TODO: Change to be SceneObjects
     // Loop throught the scene spheres
-    for (const auto CurObject : SceneObjects)
+    for (const auto& CurObject : SceneObjects)
     {
 
         // For now, cast to sphere
@@ -428,7 +431,15 @@ void RayTracer::RayTraceScreenPortion(int xmin, int xmax, int ymin, int ymax)
     for (int x = xmin; x <= xmax; x++) 
     {
         for (int y = ymin; y <= ymax; y++)
-        {            
+        {        
+            const int sx = x + ScreenWidth/2;
+            const int sy = ScreenHeight - (y + ScreenHeight/2);
+            if ((sx == 40 && sy == 734) || (sx == 464 && sy == 718)) 
+            {
+                // 40 is white triangle
+                LOG_DEBUG("");
+            }
+
             // Calculate the color of the pixel at this location
             // All of this is read only for shared data. no need for mutex locks
             sf::Vector3f Direction = CanvasToViewport(x,y);
