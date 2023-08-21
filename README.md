@@ -4,7 +4,7 @@ This is a completely CPU based simplistic raytracer written in C++ using the SFM
 
 ## Setup
 1. Must have [SFML](https://www.sfml-dev.org) installed to computer. The folder `SFML-2.5.1`contains example compiled binaries.
-2. Use makefile to compile. You might need to change the location of the lib directories if they are different on your computer. It attempts to create a build directory, so if this folder is in a location on your computer where you don't have permission to create a new directory.
+2. Use makefile to compile. You might need to change the location of the lib directories if they are different on your computer. It attempts to create a build directory, so if this folder is in a location on your computer where you don't have permission to create a new directory, it will not work.
 3. Run executable `./build/sfml-raytracer.out` on macOS or `./build/sfml-raytracer.exe` on windows/msys
 
 ## Usage
